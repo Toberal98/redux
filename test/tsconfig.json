@@ -1,20 +1,19 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
     "emitDeclarationOnly": false,
-    "strict": false,
+    "strict": true,
     "noEmit": true,
     "target": "esnext",
     "jsx": "react",
     "baseUrl": ".",
     "skipLibCheck": true,
     "noImplicitReturns": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedLocals": false
   },
-  "include": ["."]
+  "include": ["**/*.spec.ts"]
 }

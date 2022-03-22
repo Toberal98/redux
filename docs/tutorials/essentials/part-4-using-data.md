@@ -7,8 +7,6 @@ description: 'The official Redux Essentials tutorial: learn how to work with com
 
 import { DetailedExplanation } from '../../components/DetailedExplanation'
 
-# Redux Essentials, Part 4: Using Redux Data
-
 :::tip What You'll Learn
 
 - Using Redux data in multiple React components
@@ -20,7 +18,7 @@ import { DetailedExplanation } from '../../components/DetailedExplanation'
 :::info Prerequisites
 
 - Understanding the [Redux data flow and React-Redux APIs from Part 3](./part-3-data-flow.md)
-- Familiarity with [the React Router `<Link>` and `<Route>` components for page routing](https://reacttraining.com/react-router/web/api)
+- Familiarity with [the React Router `<Link>` and `<Route>` components for page routing](https://reactrouter.com/docs/en/v6/getting-started/overview)
 
 :::
 
@@ -86,7 +84,7 @@ It's possible that we might not have a matching post entry in the store - maybe 
 
 Assuming we do have the right post object in the store, `useSelector` will return that, and we can use it to render the title and content of the post in the page.
 
-You might notice that this looks fairly similar to the logic we have in the body of our `<PostsList>` component, where we loop over the whole `posts` array to show post excerpts the main feed. We _could_ try to extract a `Post` component that could be used in both places, but there are already some differences in how we're showing a post excerpt and the whole post. It's usually better to keep writing things separately for a while even if there's some duplication, and then we can decide later if the different sections of code are similar enough that we can really extract a reusable component.
+You might notice that this looks fairly similar to the logic we have in the body of our `<PostsList>` component, where we loop over the whole `posts` array to show post excerpts on the main feed. We _could_ try to extract a `Post` component that could be used in both places, but there are already some differences in how we're showing a post excerpt and the whole post. It's usually better to keep writing things separately for a while even if there's some duplication, and then we can decide later if the different sections of code are similar enough that we can really extract a reusable component.
 
 ### Adding the Single Post Route
 
@@ -253,9 +251,7 @@ import { postUpdated } from './postsSlice'
 export const EditPostForm = ({ match }) => {
   const { postId } = match.params
 
-  const post = useSelector(state =>
-    state.posts.find(post => post.id === postId)
-  )
+  const post = useSelector(state => state.posts.find(post => post.id == postId))
 
   const [title, setTitle] = useState(post.title)
   const [content, setContent] = useState(post.content)
@@ -302,7 +298,43 @@ export const EditPostForm = ({ match }) => {
 }
 ```
 
-Like with `SinglePostPage`, we'll need to import it into `App.js` and add a route that will render this component. We should also add a new link to our `SinglePostPage` that will route to `EditPostPage`, like:
+Like with `SinglePostPage`, we'll need to import it into `App.js` and add a route that will render this component with the `postId` as a route parameter.
+
+```jsx title="App.js"
+import { PostsList } from './features/posts/PostsList'
+import { AddPostForm } from './features/posts/AddPostForm'
+import { SinglePostPage } from './features/posts/SinglePostPage'
+// highlight-next-line
+import { EditPostForm } from './features/posts/EditPostForm'
+
+function App() {
+  return (
+    <Router>
+      <Navbar />
+      <div className="App">
+        <Switch>
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <React.Fragment>
+                <AddPostForm />
+                <PostsList />
+              </React.Fragment>
+            )}
+          />
+          <Route exact path="/posts/:postId" component={SinglePostPage} />
+          // highlight-next-line
+          <Route exact path="/editPost/:postId" component={EditPostForm} />
+          <Redirect to="/" />
+        </Switch>
+      </div>
+    </Router>
+  )
+}
+```
+
+We should also add a new link to our `SinglePostPage` that will route to `EditPostForm`, like:
 
 ```jsx title="features/post/SinglePostPage.js"
 // highlight-next-line
